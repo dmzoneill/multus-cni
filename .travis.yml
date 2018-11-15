@@ -45,7 +45,7 @@ deploy:
       tags: true
       all_branches: true
       condition: "$TRAVIS_TAG =~ ^v[0-9].*$"
-  # Push images to Dockerhub
+  # Push images to Dockerhub on tag
   - provider: script
     script: >
       bash -c '
@@ -57,6 +57,18 @@ deploy:
       tags: true
       all_branches: true
       condition: "$TRAVIS_TAG =~ ^v[0-9].*$"
+  # Push images to Dockerhub on merge to master
+  - provider: script
+    on:
+      branches:
+        only:
+        - master
+    script: >
+      bash -c '
+      docker tag nfvpe/multus nfvpe/multus:snapshot;
+      docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS";
+      docker push nfvpe/multus:snapshot'
+
 
 after_success:
   # put build tgz to bintray
